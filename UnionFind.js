@@ -9,6 +9,9 @@ function UnionFind()
 {
   this.all = {}
 
+  this.elementCount = 0;
+  this.clusterCount = 0;
+
   // add a new id into this UnionFind container
   this.add = add;
 
@@ -22,13 +25,26 @@ function UnionFind()
   // Use Path compression optimization
   this.find = find;
 
+  this.getClusterCount = getClusterCount;
+
   this.debugPrint = debugPrint;
+
+  this.debugPrintAllLeadIds = debugPrintAllLeadIds;
+
+  // This callback is invoked whenever 2 cluster is merged.
+  this.mergeCallback = null;
 }
 
 function add(id)
 {
+  if (id in this.all)
+    return;
+
   var obj = new UFNode(id);
   this.all[id] = obj;
+
+  ++this.clusterCount;
+  ++this.elementCount;
 }
 
 function union(id1, id2)
@@ -61,6 +77,9 @@ function union(id1, id2)
     }
 
     small.parent = large;
+
+    this.mergeCallback && this.mergeCallback(leadNode1.id, leadNode2.id);
+    --this.clusterCount;
     return large.id;
   }
 
@@ -68,6 +87,8 @@ function union(id1, id2)
   leadNode2.parent = leadNode1;
   leadNode1.rank += 1;
 
+  this.mergeCallback && this.mergeCallback(leadNode1.id, leadNode2.id);
+  --this.clusterCount;
   return leadNode1.id;
 }
 
@@ -106,6 +127,32 @@ function debugPrint()
     console.log(x + " -> " + this.all[x].parent.id);
   }
   console.log("debugPrint End\n");
+}
+
+function debugPrintAllLeadIds() {
+  var allLeads = {}
+
+  console.log("debugPrintAllLeadIds Begin");
+  for(x in this.all)
+  {
+    var leadId = this.find(x);
+    allLeads[leadId] = true;
+  }
+
+  for (leadId in allLeads)
+    console.log(leadId);
+
+  console.log("debugPrintAllLeadIds End\n");
+
+  return allLeads;
+}
+
+function getClusterCount() {
+  var result = {
+          clusterCount : this.clusterCount,
+          elementCount : this.elementCount
+        };
+  return result;
 }
 
 exports.UnionFind = UnionFind
