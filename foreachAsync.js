@@ -1,37 +1,28 @@
 // for each async
 // I create this js to replace the forEach library
-function ForEachAsync(array, action)
+function foreachAsync(array, action)
 {
   var index = 0;
 
-  function functor() {
+  var functor = function () {
     if (array === null)
-      return;
+      return null;
 
     if (index in array) {
-      action(array[index], index, array);
+      var currentIndex = index;
       ++ index;
-    }
 
-    if (index >= array.length) {
-      index = null;
-      array = null;
+      action(array[currentIndex], index, array, functor);
     }
   };
 
-  return functor;
+  return functor();
 }
 
-function PrintOne(v, index, array) {
-  console.log("print one", v, index, array);
+function PrintOne(v, index, array, asyncNext) {
+  console.log("PrintOne", v, index, array);
+  setTimeout(asyncNext, 500);
 }
 
-var func = ForEachAsync(['a', 'b', 'c', 'd'], PrintOne);
-func();
-func();
-func();
-func();
-func();
-func();
-func();
-func();
+
+foreachAsync(['a', 'b', 'c', 'd'], PrintOne);
