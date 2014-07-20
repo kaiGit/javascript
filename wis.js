@@ -1,4 +1,6 @@
 // wis
+// max weight independent set problem
+// 
 
 function wisRecur(input, startIndex)
 {
