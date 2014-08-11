@@ -1,4 +1,4 @@
-// assignment 4-1
+// assignment 5-1
 
 var assert = require("assert");
 require("colors");
@@ -16,7 +16,7 @@ Graph.prototype.dist = function(from, to) {
 	if (key in this.distCache) {
 		return this.distCache[key];
 	}
-	
+
 	var fromCity = this.map[from - 1];
 	var toCity = this.map[to - 1];
 	var offsetX = fromCity.x - toCity.x;
@@ -96,13 +96,13 @@ function tsp(graph) {
     var A = {};
 	var B = {};
 	var allCities = new Array(graph.n);
-	
+
 	// Base case
 	A[key([1], 1)] = 0;
 	for (var i = 2; i <= graph.n; ++i) {
 		A[key([i], 1)] = Infinity;
 	}
-	
+
 	// select souce in S
 	for (var i = 1; i <= graph.n; ++i) {
 		allCities[i-1] = i;
@@ -111,13 +111,13 @@ function tsp(graph) {
 	for (var i = 2; i <= graph.n; ++i) {
 		allCitiesWithou1.push(i);
 	}
-	
+
 	var S = [];
 	var j = 0;
 	var k = 0;
 	for (var m = 2; m <= graph.n; ++m) {
 		console.log('m = '.yellow + m.toString());
-		// Compose set S that's of m size, and always contain 1, so the first of S must be 1	
+		// Compose set S that's of m size, and always contain 1, so the first of S must be 1
 		var arrayOfSwo1 = select(allCitiesWithou1, m-1); // populate arrayOfSwo1 of all possible S of m size
 		console.log('finish prepare arrayOfSwo1', arrayOfSwo1.length);
 		var arrayOfSwo1Len = arrayOfSwo1.length;
@@ -125,30 +125,30 @@ function tsp(graph) {
 			var Swo1 = arrayOfSwo1[indexS];
 			var sFlag = arrayToBitFlag(Swo1); // sFlag is mising city 1
 			sFlag |= 1 << 1; // city one is using 2;
-			
+
 			//if (S.length > 7) console.log('indexS = '.green, indexS);
 			for (var indexJ = 1; indexJ < m; ++indexJ) {
 				j = Swo1[indexJ-1];
-				
+
 				var key_Sj = keyFlags(sFlag, j);
 				var temp = Infinity; // Use temp to hold for A[key]
-				
+
 				var ckj = Infinity;
 				var SwoJFlags = sFlag ^ (1 << j);
 				var key_swoj_k = '';
 				var newPath = Infinity;
-				
+
 				for (var indexK = 0; indexK < m; ++indexK) {
 					if (indexK == indexJ)
 						continue;
-					
+
 					if (indexK === 0)
 						k = 1;
 					else
 						k = Swo1[indexK-1];
-						
+
 					ckj = graph.dist(k, j);
-					
+
 					key_swoj_k = keyFlags(SwoJFlags, k);
 					//console.log('key_swoj_k', key_swoj_k);
 					//console.log('A[key_swoj_k', A[key_swoj_k]);
@@ -158,16 +158,16 @@ function tsp(graph) {
 						temp = newPath;
 					}
 				}
-				
+
 				B[key_Sj] = temp;
 			}
 		}
-		
+
 		delete A;
 		A = B;
 		B = {};
 	} // end of for (var m = ...
-	
+
 	var overall = Infinity;
 	var cj1 = 0;
 	var allSet = new Array(graph.n);
@@ -183,9 +183,9 @@ function tsp(graph) {
 			overall = newPath;
 		}
 	}
-	
+
 	//console.log('A = '.white, A);
-	
+
 	return overall;
 }
 
@@ -193,16 +193,16 @@ function select(source, count) {
 	function sortNumber(a, b) {
 		return a-b;
 	}
-	
+
 	var flags = new Array(source.length);
 	for (var i = 0; i < source.length; ++i) {
 		flags[i] = 0;
 	}
-	
+
 	var finalResult = [];
 	var totalCount = 0;
 	var len = source.length;
-	
+
 	function selectImpl(start) {
 		if (totalCount === count) {
 			// Exactly, output current array
@@ -217,23 +217,23 @@ function select(source, count) {
 			finalResult.push(oneResult);
 			return;
 		}
-			
+
 		if (start >= len) {
 			return;
 		}
-			
-		// else, totalCount must be smaller than count	
+
+		// else, totalCount must be smaller than count
 		selectImpl(start+1);
-		
+
 		flags[start] = 1;
 		++totalCount;
 		selectImpl(start+1);
 		--totalCount;
 		flags[start] = 0;
 	}
-	
+
 	selectImpl(0);
-	
+
 	return finalResult;
 }
 
